@@ -1,0 +1,14 @@
+# build artifacts
+.cache
+.clangd
+compile_commands.json
+tests/
+build/
+log
+comp
+
+# perf stuff
+out.perf
+perf.data
+out.folded
+flamegraph.svg
