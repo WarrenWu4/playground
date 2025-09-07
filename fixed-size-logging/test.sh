@@ -6,11 +6,16 @@ kb=(10, 100, 1000, 10000, 100000)
 command="make run"
 
 for ((i=0; i<5; i++)); do
-  arg1="${array1[$i]}"
-  arg2="${array2[$i]}"
-  output_file="tests/out_${i}_${arg1}_${arg2}.txt"
-  eval "${command} MESSAGES=${arg1} KB=${arg2}" > "${output_file}"
-  echo "Iteration $((i)) complete"
+  arg1="${msg[$i]}"
+  echo "Starting num_messages=${arg1}"
+  echo "--------------------------------"
+  for ((j=0; j<5; j++)); do
+    arg2="${kb[$j]}"
+    echo "Starting kb=${arg2}"
+    output_file="tests/out_${arg1}_${arg2}.txt"
+    eval "${command} MESSAGES=${arg1} KB=${arg2}" > "${output_file}"
+  done
+  echo ""
 done
 
 echo "Script complete"
