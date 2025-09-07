@@ -5,11 +5,11 @@ kb=(100, 1000, 10000)
 
 command="make run"
 
-for ((i=0; i<5; i++)); do
+for ((i=0; i<3; i++)); do
   arg1="${msg[$i]}"
   echo "Starting num_messages=${arg1}"
   echo "--------------------------------"
-  for ((j=0; j<5; j++)); do
+  for ((j=0; j<3; j++)); do
     arg2="${kb[$j]}"
     echo "Starting kb=${arg2}"
     output_file="tests/out_${arg1}_${arg2}.txt"
