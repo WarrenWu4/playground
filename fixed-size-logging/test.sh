@@ -13,7 +13,8 @@ for ((i=0; i<3; i++)); do
     arg2="${msg[$j]}"
     echo "Starting msg=${arg2}"
     output_file="tests/out_${arg1}_${arg2}.txt"
-    eval "${command} MESSAGES=${arg1} KB=${arg2}" > "${output_file}"
+    eval "${command} MESSAGES=${arg2} KB=${arg1}" > "${output_file}"
+    eval "make clean"
   done
   echo ""
 done
