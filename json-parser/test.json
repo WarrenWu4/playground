@@ -1,5 +1,12 @@
 {
-  "hello": "world",
-  "test": 123,
-  "key": "value"
+    "fontSize": 16,
+    "textBufferLength": 20,
+    "inactiveTimeout": -1,
+    "transparency": 1,
+    "textColor": "#ffffff",
+    "backgroundColor": "#000000",
+    "windowPosition": {
+        "x": 0,
+        "y": 0
+    }
 }
