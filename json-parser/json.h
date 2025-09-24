@@ -12,6 +12,8 @@
 #include <vector>
 #include <regex>
 #include <variant>
+#include <cmath>
+#include <limits>
 #include <assert.h>
 
 struct JsonValue;
@@ -197,6 +199,67 @@ private:
         return res;
     }
 
+    void stringifyValue(JsonValue jv, std::string& res, int level) {
+        if (jv.isNull()) {
+            res += "null";
+        } else if (jv.isBool()) {
+            res += (jv.getBool()) ? "true" : "false";
+        } else if (jv.isNumber()) {
+            double jvNum = jv.getNumber();
+            double integral_part;
+            double fractional_part = std::modf(jvNum, &integral_part);
+            if (std::fabs(fractional_part) > std::numeric_limits<double>::epsilon()) {
+                res += std::to_string(jvNum);
+            } else if (jvNum < std::numeric_limits<int>::min() || jvNum > std::numeric_limits<int>::max()) {
+                res += std::to_string(jvNum);
+            } else {
+                res += std::to_string(static_cast<int>(jvNum));
+            }
+        } else if (jv.isString()) {
+            res += "\"" + jv.getString() + "\"";
+        } else if (jv.isArray()) {
+            res += "[\n";
+            JsonArray jvArr = jv.getArray();
+            for (size_t i = 0; i < jvArr.size(); i++) {
+                for (int j = 0; j < level; j++) {
+                    res += "\t";
+                }
+                stringifyValue(jvArr.at(i), res, level+1);
+                if (i < jvArr.size()-1) {
+                    res += ",";
+                }
+                res += "\n";
+            }
+            for (int j = 0; j < level; j++) {
+                res += "\t";
+            }
+            res += "]";
+        } else if (jv.isObject()) {
+            res += "{\n";
+            JsonObject jvObj = jv.getObject();
+            size_t counter = 0;
+            for (const auto& pair : jvObj) {
+                for (int j = 0; j < level; j++) {
+                    res += "\t";
+                }
+                res += "\t";
+                res += "\"" + pair.first + "\"" + ": ";
+                stringifyValue(pair.second, res, level+1);
+                if (counter < jvObj.size()-1) {
+                    res += ",";
+                }
+                res += "\n";
+                counter += 1;
+            }
+            for (int j = 0; j < level; j++) {
+                res += "\t";
+            }
+            res += "}";
+        } else {
+            throw std::runtime_error("Invalid JsonValue.");
+        }
+    }
+
 public:
     JsonValue parse(std::string text) {
         data = text;
@@ -204,10 +267,27 @@ public:
         ptr = 0;
         return parseValue();
     }
+
     JsonValue parseFromFile(std::string path) {
         data = readFile(path);
         end = data.size();
         ptr = 0;
         return parseValue();
+    }
+
+    std::string stringify(JsonValue jv) {
+        std::string res = "";
+        assert(jv.isArray() || jv.isObject());
+        stringifyValue(jv, res, 0);
+        return res;
+    }
+
+    void writeToFile(std::string path, std::string json) {
+        std::ofstream file(path.c_str());
+        if (!file.is_open()) {
+            throw std::runtime_error("Unable to open file");
+        }
+        file << json;
+        file.close();
     }
 };
